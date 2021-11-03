@@ -1,50 +1,50 @@
 use std::ops::{Add, AddAssign, Mul};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Matrix<T>
+pub struct Matrix<T, const M: usize, const N: usize>
 where
     T: Copy + Mul<Output = T> + Default,
 {
-    pub values: [[T; 3]; 3],
+    pub values: [[T; N]; M],
 }
 
-impl<T> Matrix<T>
+impl<T, const M: usize, const N: usize> Matrix<T, M, N>
 where
     T: Copy + Mul<Output = T> + Default + AddAssign,
 {
-    pub fn new(array: [[T; 3]; 3]) -> Self {
+    pub fn new(array: [[T; N]; M]) -> Self {
         Self { values: array }
     }
 
-    pub fn mul(&self, rhs: &Self) -> Self {
-        let mut res = [[Default::default(); 3]; 3];
+    pub fn mul<const O: usize>(&self, rhs: &Matrix<T, N, O>) -> Matrix<T, M, O> {
+        let mut res = [[Default::default(); O]; M];
 
         // For each element in the result
-        for i in 0..3 {
-            for j in 0..3 {
+        for i in 0..M {
+            for j in 0..O {
                 // For each value contributing to the resulting element
-                for k in 0..3 {
+                for k in 0..N {
                     res[i][j] += self.values[i][k] * rhs.values[k][j];
                 }
             }
         }
 
-        Self { values: res }
+        Matrix::<T, M, O> { values: res }
     }
 }
 
-impl<T> Add for Matrix<T>
+impl<T, const M: usize, const N: usize> Add for Matrix<T, M, N>
 where
     T: Copy + Add<Output = T> + Default + Mul<Output = T>,
 {
-    type Output = Matrix<T>;
+    type Output = Matrix<T, M, N>;
 
     fn add(self, other: Self) -> Self {
-        let mut res = [[Default::default(); 3]; 3];
+        let mut res = [[Default::default(); N]; M];
 
         // For each element
-        for row in 0..3 {
-            for col in 0..3 {
+        for row in 0..M {
+            for col in 0..N {
                 // Add each element
                 res[row][col] = self.values[row][col] + other.values[row][col];
             }
@@ -54,18 +54,18 @@ where
     }
 }
 
-impl<T> Mul for &Matrix<T>
+impl<T, const M: usize, const N: usize> Mul for &Matrix<T, M, N>
 where
     T: Copy + Mul<Output = T> + Default,
 {
-    type Output = Matrix<T>;
+    type Output = Matrix<T, M, N>;
 
-    fn mul(self, rhs: Self) -> Matrix<T> {
-        let mut res = [[Default::default(); 3]; 3];
+    fn mul(self, rhs: Self) -> Matrix<T, M, N> {
+        let mut res = [[Default::default(); N]; M];
 
         // For each element
-        for row in 0..3 {
-            for col in 0..3 {
+        for row in 0..M {
+            for col in 0..N {
                 // Multiply the elements together
                 res[row][col] = self.values[row][col] * rhs.values[row][col];
             }
@@ -97,5 +97,14 @@ mod tests {
             res,
             Matrix::new([[26.0, 16.0, 28.0], [56.0, 40.0, 64.0], [86.0, 64.0, 100.0]])
         );
+    }
+
+    #[test]
+    fn multiply_matrices_different_shapes() {
+        let mtx1 = Matrix::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
+        let mtx2 = Matrix::new([[10.0, 11.0], [20.0, 21.0], [30.0, 31.0]]);
+        let res = mtx1.mul(&mtx2);
+
+        assert_eq!(res, Matrix::new([[140.0, 146.0], [320.0, 335.0]]));
     }
 }

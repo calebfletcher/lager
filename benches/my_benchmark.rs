@@ -1,11 +1,16 @@
+use std::ops::{Add, Mul};
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use matrix::Matrix;
 
-fn add(a: Matrix, b: Matrix) -> Matrix {
+fn add<T: Copy + Default + Mul<Output = T> + Add<Output = T>>(
+    a: Matrix<T>,
+    b: Matrix<T>,
+) -> Matrix<T> {
     a + b
 }
 
-fn mul(a: Matrix, b: Matrix) -> Matrix {
+fn mul<T: Copy + Default + Mul<Output = T>>(a: Matrix<T>, b: Matrix<T>) -> Matrix<T> {
     a.mul(&b)
 }
 

@@ -1,7 +1,10 @@
 use std::ops::{Add, AddAssign, Mul};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Matrix<T> {
+pub struct Matrix<T>
+where
+    T: Copy + Mul<Output = T> + Default,
+{
     pub values: [[T; 3]; 3],
 }
 
@@ -32,7 +35,7 @@ where
 
 impl<T> Add for Matrix<T>
 where
-    T: Copy + Add<Output = T> + Default,
+    T: Copy + Add<Output = T> + Default + Mul<Output = T>,
 {
     type Output = Matrix<T>;
 

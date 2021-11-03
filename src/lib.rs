@@ -13,8 +13,10 @@ impl Matrix {
     pub fn mul(&self, rhs: &Self) -> Self {
         let mut res = [[0.0; 3]; 3];
 
+        // For each element in the result
         for i in 0..3 {
             for j in 0..3 {
+                // For each value contributing to the resulting element
                 for k in 0..3 {
                     res[i][j] += self.values[i][k] * rhs.values[k][j];
                 }
@@ -31,8 +33,10 @@ impl Add for Matrix {
     fn add(self, other: Self) -> Matrix {
         let mut res = [[0.0; 3]; 3];
 
+        // For each element
         for row in 0..3 {
             for col in 0..3 {
+                // Add each element
                 res[row][col] = self.values[row][col] + other.values[row][col];
             }
         }
@@ -47,8 +51,10 @@ impl Mul for &Matrix {
     fn mul(self, rhs: Self) -> Matrix {
         let mut res = [[0.0; 3]; 3];
 
+        // For each element
         for row in 0..3 {
             for col in 0..3 {
+                // Multiply the elements together
                 res[row][col] = self.values[row][col] * rhs.values[row][col];
             }
         }

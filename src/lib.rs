@@ -1,17 +1,20 @@
-use std::ops::{Add, Mul};
+use std::ops::{Add, AddAssign, Mul};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Matrix {
-    pub values: [[f32; 3]; 3],
+pub struct Matrix<T> {
+    pub values: [[T; 3]; 3],
 }
 
-impl Matrix {
-    pub fn new(array: [[f32; 3]; 3]) -> Self {
+impl<T> Matrix<T>
+where
+    T: Copy + Mul<Output = T> + Default + AddAssign,
+{
+    pub fn new(array: [[T; 3]; 3]) -> Self {
         Self { values: array }
     }
 
     pub fn mul(&self, rhs: &Self) -> Self {
-        let mut res = [[0.0; 3]; 3];
+        let mut res = [[Default::default(); 3]; 3];
 
         // For each element in the result
         for i in 0..3 {
@@ -27,11 +30,14 @@ impl Matrix {
     }
 }
 
-impl Add for Matrix {
-    type Output = Matrix;
+impl<T> Add for Matrix<T>
+where
+    T: Copy + Add<Output = T> + Default,
+{
+    type Output = Matrix<T>;
 
-    fn add(self, other: Self) -> Matrix {
-        let mut res = [[0.0; 3]; 3];
+    fn add(self, other: Self) -> Self {
+        let mut res = [[Default::default(); 3]; 3];
 
         // For each element
         for row in 0..3 {
@@ -45,11 +51,14 @@ impl Add for Matrix {
     }
 }
 
-impl Mul for &Matrix {
-    type Output = Matrix;
+impl<T> Mul for &Matrix<T>
+where
+    T: Copy + Mul<Output = T> + Default,
+{
+    type Output = Matrix<T>;
 
-    fn mul(self, rhs: Self) -> Matrix {
-        let mut res = [[0.0; 3]; 3];
+    fn mul(self, rhs: Self) -> Matrix<T> {
+        let mut res = [[Default::default(); 3]; 3];
 
         // For each element
         for row in 0..3 {

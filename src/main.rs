@@ -1,5 +1,5 @@
 #![feature(bench_black_box)]
-use matrix::Matrix;
+use lager::Matrix;
 use std::hint::black_box;
 
 fn main() {

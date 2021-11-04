@@ -1,6 +1,16 @@
 use lager::Matrix;
 
 #[test]
+fn index_matrices() {
+    let mtx = Matrix::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+
+    assert_eq!(mtx[[0, 0]], 1.0);
+    assert_eq!(mtx[[0, 2]], 3.0);
+    assert_eq!(mtx[[2, 0]], 7.0);
+    assert_eq!(mtx[[2, 2]], 9.0);
+}
+
+#[test]
 fn multiply_identity_matrices() {
     let i3 = Matrix::new([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
     let res = i3.mul(&i3);

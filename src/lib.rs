@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Index, Mul};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Matrix<T, const M: usize, const N: usize>
@@ -72,5 +72,16 @@ where
         }
 
         Matrix { values: res }
+    }
+}
+
+impl<T, const M: usize, const N: usize> Index<[usize; 2]> for Matrix<T, M, N>
+where
+    T: Copy + Mul<Output = T> + Default,
+{
+    type Output = T;
+
+    fn index(&self, idx: [usize; 2]) -> &Self::Output {
+        &self.values[idx[0]][idx[1]]
     }
 }

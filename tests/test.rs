@@ -11,6 +11,17 @@ fn index_matrices() {
 }
 
 #[test]
+fn matrices_are_close() {
+    let mtx1 = Matrix::new([[4.4, 7.3, 2.5], [2.4, 6.4, 2.2], [9.5, 3.5, 4.6]]);
+    let mtx2 = Matrix::new([
+        [4.40004, 7.299998, 2.50002],
+        [2.39998, 6.400001, 2.19998],
+        [9.50006, 3.499997, 4.60004],
+    ]);
+    assert!(mtx1.isclose(&mtx2));
+}
+
+#[test]
 fn multiply_identity_matrices() {
     let i3 = Matrix::new([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
     let res = i3.mul(&i3);

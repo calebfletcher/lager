@@ -1,16 +1,23 @@
-use std::ops::{Add, AddAssign, Index, Mul};
+use std::ops::{Add, AddAssign, Index, Mul, Neg, Sub};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Matrix<T, const M: usize, const N: usize>
-where
-    T: Copy + Mul<Output = T> + Default,
-{
+pub struct Matrix<T, const M: usize, const N: usize> {
     pub values: [[T; N]; M],
 }
 
 impl<T, const M: usize, const N: usize> Matrix<T, M, N>
 where
-    T: Copy + Mul<Output = T> + Default + AddAssign,
+    T: Copy
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + Default
+        + AddAssign
+        + Abs
+        + PartialOrd
+        + From<f32>,
+    f64: From<T>,
 {
     pub fn new(array: [[T; N]; M]) -> Self {
         Self { values: array }
@@ -31,11 +38,28 @@ where
 
         Matrix::<T, M, O> { values: res }
     }
+
+    pub fn isclose(&self, other: &Matrix<T, M, N>) -> bool {
+        let rt: T = 1e-05.into();
+        let at: T = 1e-08.into();
+
+        // For each element in the matrices
+        for i in 0..M {
+            for j in 0..N {
+                // Compare difference to the threshold
+                let threshold = rt * self[[i, j]].abs() + at;
+                if (self[[i, j]] - other[[i, j]]).abs() > threshold {
+                    return false;
+                }
+            }
+        }
+        true
+    }
 }
 
 impl<T, const M: usize, const N: usize> Add for Matrix<T, M, N>
 where
-    T: Copy + Add<Output = T> + Default + Mul<Output = T>,
+    T: Copy + Add<Output = T> + Default,
 {
     type Output = Matrix<T, M, N>;
 
@@ -75,13 +99,35 @@ where
     }
 }
 
-impl<T, const M: usize, const N: usize> Index<[usize; 2]> for Matrix<T, M, N>
-where
-    T: Copy + Mul<Output = T> + Default,
-{
+impl<T, const M: usize, const N: usize> Index<[usize; 2]> for Matrix<T, M, N> {
     type Output = T;
 
     fn index(&self, idx: [usize; 2]) -> &Self::Output {
         &self.values[idx[0]][idx[1]]
     }
 }
+
+
+pub trait Abs {
+    fn abs(&self) -> Self
+    where
+        Self: Sized + PartialOrd + Neg<Output = Self> + From<f32> + Copy,
+    {
+        if *self >= 0.0.into() {
+            *self
+        } else {
+            -*self
+        }
+    }
+}
+
+impl Abs for f32 {}
+impl Abs for f64 {}
+impl Abs for u8 {}
+impl Abs for i8 {}
+impl Abs for u16 {}
+impl Abs for i16 {}
+impl Abs for u32 {}
+impl Abs for i32 {}
+impl Abs for u64 {}
+impl Abs for i64 {}

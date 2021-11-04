@@ -1,8 +1,10 @@
-use std::ops::{Add, AddAssign, Index, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Index, IndexMut, Mul, Neg, Range, Sub};
 
 use abs::Abs;
+use matrixview::MatrixView;
 
 mod abs;
+mod matrixview;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Matrix<T, const M: usize, const N: usize> {
@@ -61,7 +63,13 @@ where
         }
         true
     }
-}
+
+    pub fn view<const R: usize, const C: usize>(
+        &self,
+        bounds: [Range<usize>; 2],
+    ) -> MatrixView<T, M, N, R, C> {
+        MatrixView::new(self, bounds)
+    }
 
 impl<T, const M: usize, const N: usize> Add for Matrix<T, M, N>
 where

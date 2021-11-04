@@ -62,3 +62,13 @@ fn multiply_matrices_different_shapes() {
 
     assert!(res.isclose(&expected));
 }
+
+#[test]
+fn get_view_from_matrix() {
+    let mtx = Matrix::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
+    let slice = mtx.view([0..2, 1..3]);
+    let slice_mtx: Matrix<f64, 2, 2> = slice.into();
+
+    let expected = Matrix::new([[2.0, 3.0], [5.0, 6.0]]);
+    assert!(slice_mtx.isclose(&expected));
+}

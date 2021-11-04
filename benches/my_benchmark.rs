@@ -3,14 +3,17 @@ use std::ops::{Add, Mul};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use lager::Matrix;
 
-fn add<T: Copy + Default + Mul<Output = T> + Add<Output = T>>(
-    a: Matrix<T>,
-    b: Matrix<T>,
-) -> Matrix<T> {
+fn add<T: Copy + Default + Mul<Output = T> + Add<Output = T>, const M: usize, const N: usize>(
+    a: Matrix<T, M, N>,
+    b: Matrix<T, M, N>,
+) -> Matrix<T, M, N> {
     a + b
 }
 
-fn mul<T: Copy + Default + Mul<Output = T>>(a: Matrix<T>, b: Matrix<T>) -> Matrix<T> {
+fn mul<T: Copy + Default + Mul<Output = T>, const M: usize, const N: usize>(
+    a: Matrix<T, M, N>,
+    b: Matrix<T, M, N>,
+) -> Matrix<T, M, N> {
     a.mul(&b)
 }
 

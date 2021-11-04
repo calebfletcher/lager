@@ -120,3 +120,41 @@ impl<T, const M: usize, const N: usize> Index<[usize; 2]> for Matrix<T, M, N> {
         &self.values[idx[0]][idx[1]]
     }
 }
+
+impl<T, const M: usize, const N: usize> IndexMut<[usize; 2]> for Matrix<T, M, N> {
+    fn index_mut(&mut self, idx: [usize; 2]) -> &mut Self::Output {
+        &mut self.values[idx[0]][idx[1]]
+    }
+}
+
+impl<T, const M: usize, const N: usize, const R: usize, const C: usize>
+    From<MatrixView<'_, T, M, N, R, C>> for Matrix<T, R, C>
+where
+    T: Sub<Output = T>
+        + Copy
+        + Mul<Output = T>
+        + Add<Output = T>
+        + Neg<Output = T>
+        + Default
+        + Abs
+        + AddAssign
+        + PartialOrd
+        + From<f32>,
+    f64: From<T>,
+{
+    fn from(view: MatrixView<T, M, N, R, C>) -> Self {
+        // Crete a new empty matrix
+        let mut mtx = Matrix::new([[0.0.into(); C]; R]);
+
+        // For each element in the view
+        for row in view.bounds[0].clone() {
+            for col in view.bounds[1].clone() {
+                // Copy the element from the view to the new matrix
+                mtx[[row - view.bounds[0].start, col - view.bounds[1].start]] =
+                    view.mtx[[row, col]];
+            }
+        }
+        mtx
+    }
+}
+

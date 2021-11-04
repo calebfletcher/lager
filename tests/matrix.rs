@@ -72,3 +72,30 @@ fn get_view_from_matrix() {
     let expected = Matrix::new([[2.0, 3.0], [5.0, 6.0]]);
     assert!(slice_mtx.isclose(&expected));
 }
+
+#[test]
+fn view_iterator_column() {
+    let mtx = Matrix::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let slice = mtx.view::<3, 1>([0..3, 1..2]);
+
+    let mut iter = slice.iter();
+
+    assert_eq!(Some(&2.0), iter.next());
+    assert_eq!(Some(&5.0), iter.next());
+    assert_eq!(Some(&8.0), iter.next());
+    assert_eq!(None, iter.next());
+}
+
+#[test]
+fn view_iterator_matrix() {
+    let mtx = Matrix::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let slice = mtx.view::<2, 2>([1..3, 0..2]);
+
+    let mut iter = slice.iter();
+
+    assert_eq!(Some(&4.0), iter.next());
+    assert_eq!(Some(&5.0), iter.next());
+    assert_eq!(Some(&7.0), iter.next());
+    assert_eq!(Some(&8.0), iter.next());
+    assert_eq!(None, iter.next());
+}

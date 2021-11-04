@@ -5,6 +5,8 @@ pub struct Matrix<T, const M: usize, const N: usize> {
     pub values: [[T; N]; M],
 }
 
+pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
+
 impl<T, const M: usize, const N: usize> Matrix<T, M, N>
 where
     T: Copy

@@ -78,7 +78,7 @@ where
     }
 }
 
-impl<T, const M: usize, const N: usize> Mul for &Matrix<T, M, N>
+impl<T, const M: usize, const N: usize> Mul for Matrix<T, M, N>
 where
     T: Copy + Mul<Output = T> + Default,
 {

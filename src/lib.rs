@@ -2,6 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use std::{
+    cmp,
     fmt::Debug,
     ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, Neg, Range, Sub, SubAssign},
 };
@@ -39,6 +40,25 @@ where
 {
     pub fn new(array: [[T; N]; M]) -> Self {
         Self { values: array }
+    }
+
+    pub fn zeros() -> Self {
+        Self::new([[0.0.into(); N]; M])
+    }
+
+    pub fn ones() -> Self {
+        Self::new([[1.0.into(); N]; M])
+    }
+
+    pub fn identity() -> Self {
+        let mut mtx = Self::zeros();
+
+        let min_axis = cmp::min(M, N);
+        for i in 0..min_axis {
+            mtx[[i, i]] = 1.0.into();
+        }
+
+        mtx
     }
 
     pub fn mul<const O: usize>(&self, rhs: &Matrix<T, N, O>) -> Matrix<T, M, O> {

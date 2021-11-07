@@ -172,3 +172,27 @@ fn vstack() {
 
     assert!(result.isclose(&expected));
 }
+
+#[test]
+fn zeros() {
+    let result = Matrix::zeros();
+    let expected = Matrix::new([[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]]);
+
+    assert!(result.isclose(&expected));
+}
+
+#[test]
+fn ones() {
+    let result = Matrix::ones();
+    let expected = Matrix::new([[1., 1., 1.], [1., 1., 1.], [1., 1., 1.]]);
+
+    assert!(result.isclose(&expected));
+}
+
+#[test]
+fn identity_3x3() {
+    let result = Matrix::identity();
+    let expected = Matrix::new([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]);
+
+    assert!(result.isclose(&expected));
+}

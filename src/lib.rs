@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Index, IndexMut, Mul, Neg, Range, Sub};
+use std::{
+    fmt::Debug,
+    ops::{Add, AddAssign, Div, Index, IndexMut, Mul, Neg, Range, Sub, SubAssign},
+};
 
 use abs::Abs;
 use matrixview::MatrixView;
@@ -19,10 +22,13 @@ where
         + Add<Output = T>
         + Sub<Output = T>
         + Mul<Output = T>
+        + Div<Output = T>
         + Neg<Output = T>
         + Default
         + AddAssign
+        + SubAssign
         + Abs
+        + Debug
         + PartialOrd
         + From<f32>,
     f64: From<T>,
@@ -70,6 +76,60 @@ where
     ) -> MatrixView<T, M, N, R, C> {
         MatrixView::new(self, bounds)
     }
+
+    pub fn into_row_echelon(&mut self) {
+        let mut h = 0; /* Initialization of the pivot row */
+        let mut k = 0; /* Initialization of the pivot column */
+
+        while h < M && k < N {
+            /* Find the k-th pivot: */
+
+            let i_max = h + argmax(
+                self.view::<M, 1>([h..M, k..k])
+                    .iter()
+                    .take(M - h) // Takes only the values within the valid range
+                    .map(|el| el.abs()),
+            )
+            .unwrap();
+
+            //let i_max = argmax (i = h..m, A[[i, k]].abs());
+            if self[[i_max, k]] == 0.0.into() {
+                /* No pivot in this column, pass to next column */
+                k += 1;
+            } else {
+                self.swap_rows(h, i_max);
+                /* Do for all rows below pivot: */
+                for i in h + 1..M {
+                    let f = self[[i, k]] / self[[h, k]];
+                    /* Fill with zeros the lower part of pivot column: */
+                    self[[i, k]] = 0.0.into();
+                    /* Do for all remaining elements in current row: */
+                    for j in (k + 1)..N {
+                        let el = self[[h, j]];
+                        self[[i, j]] -= el * f;
+                    }
+                }
+                /* Increase pivot row and column */
+                h += 1;
+                k += 1;
+            }
+        }
+    }
+
+    fn swap_rows(&mut self, row1: usize, row2: usize) {
+        if row1 == row2 {
+            return;
+        }
+        self.values.swap(row1, row2);
+    }
+}
+
+fn argmax<T: PartialOrd>(slice: impl Iterator<Item = T>) -> Option<usize> {
+    slice
+        .enumerate()
+        .max_by(|(_, value0), (_, value1)| value0.partial_cmp(value1).expect("nan found in argmax"))
+        .map(|(idx, _)| idx)
+}
 
 impl<T, const M: usize, const N: usize> Add for Matrix<T, M, N>
 where
@@ -135,9 +195,12 @@ where
         + Mul<Output = T>
         + Add<Output = T>
         + Neg<Output = T>
+        + Div<Output = T>
         + Default
         + Abs
+        + Debug
         + AddAssign
+        + SubAssign
         + PartialOrd
         + From<f32>,
     f64: From<T>,

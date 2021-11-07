@@ -258,3 +258,10 @@ fn lu_decomposition_with_permuations() {
 
     assert!(mtx.isclose(&result.p.mul(&result.l.mul(&result.u))));
 }
+
+#[test]
+fn count_3x3() {
+    let mtx = Matrix::new([[2., 4., 1.], [0., 1., -1.], [1., 4., 0.]]);
+    assert_eq!(mtx.count(), 7);
+}
+

@@ -279,6 +279,17 @@ where
             p: perms,
         }
     }
+    pub fn count(&self) -> usize {
+        let mut count = 0;
+        for i in 0..M {
+            for j in 0..N {
+                if self[[i, j]] != 0.0.into() {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
 }
 
 fn argmax<T: PartialOrd>(slice: impl Iterator<Item = T>) -> Option<usize> {

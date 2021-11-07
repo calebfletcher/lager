@@ -280,7 +280,7 @@ where
     f64: From<T>,
 {
     fn from(view: MatrixView<T, M, N, R, C>) -> Self {
-        // Crete a new empty matrix
+        // Create a new empty matrix
         let mut mtx = Matrix::new([[0.0.into(); C]; R]);
 
         // For each element in the view

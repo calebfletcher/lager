@@ -18,6 +18,12 @@ pub struct Matrix<T, const M: usize, const N: usize> {
     pub values: [[T; N]; M],
 }
 
+pub struct LUDecomposition<T, const M: usize, const N: usize> {
+    pub l: Matrix<T, M, M>, //  Not a typo, see https://en.wikipedia.org/wiki/LU_decomposition#Rectangular_matrices
+    pub u: Matrix<T, M, N>,
+    pub p: Matrix<T, M, N>,
+}
+
 pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
 
 impl<T, const M: usize, const N: usize> Matrix<T, M, N>
@@ -226,6 +232,52 @@ where
             }
         }
         mtx
+    }
+
+    pub fn lu(&self) -> LUDecomposition<T, M, N> {
+        let mut mtx = self.clone();
+
+        let mut perms = Matrix::identity();
+        let mut lower = Matrix::zeros();
+        let mut upper = Matrix::zeros();
+
+        for col in 0..N {
+            let mut next_nonzero_row = col;
+            for row in col..M {
+                if mtx[[row, col]] != 0.0.into() {
+                    next_nonzero_row = row;
+                    break;
+                }
+            }
+
+            mtx.swap_rows(col, next_nonzero_row);
+            perms.swap_rows(col, next_nonzero_row);
+        }
+
+        // Doolittle's algorithm
+        for i in 0..M {
+            for j in i..N {
+                upper[[i, j]] = mtx[[i, j]];
+                for k in 0..i {
+                    let el = upper[[k, j]];
+                    upper[[i, j]] -= lower[[i, k]] * el;
+                }
+            }
+            for j in i..N {
+                lower[[j, i]] = mtx[[j, i]];
+                for k in 0..i {
+                    let el = lower[[j, k]];
+                    lower[[j, i]] -= el * upper[[k, i]];
+                }
+                lower[[j, i]] /= upper[[i, i]];
+            }
+        }
+
+        LUDecomposition {
+            l: lower,
+            u: upper,
+            p: perms,
+        }
     }
 }
 

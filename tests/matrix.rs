@@ -1,4 +1,4 @@
-use lager::Matrix;
+use lager::{LUDecomposition, Matrix};
 
 #[test]
 fn index_matrices() {
@@ -204,4 +204,57 @@ fn identity_3x3() {
     let expected = Matrix::new([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]);
 
     assert!(result.isclose(&expected));
+}
+
+#[test]
+fn lu_decomposition() {
+    let mtx = Matrix::new([[2., -1., -2.], [-4., 6., 3.], [-4., -2., 8.]]);
+
+    let expected = LUDecomposition {
+        l: Matrix::new([[1., 0., 0.], [-2., 1., 0.], [-2., -1., 1.]]),
+        u: Matrix::new([[2., -1., -2.], [0., 4., -1.], [0., 0., 3.]]),
+        p: Matrix::new([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]),
+    };
+
+    let result = mtx.lu();
+
+    assert!(result.l.isclose(&expected.l));
+    assert!(result.u.isclose(&expected.u));
+    assert!(result.p.isclose(&expected.p));
+}
+
+#[test]
+fn lu_decomposition_unknown_result() {
+    // This test gives a result that doesn't match other implementations,
+    // but still seems to give a valid result. Probably something to do with
+    // the choice of pivots.
+
+    let mtx = Matrix::new([[10., -7., 0.], [-3., 2., 6.], [5., -1., 5.]]);
+
+    // What other tools give as the output, not used here
+    // let expected = LUDecomposition {
+    //     l: Matrix::new([[1., 0., 0.], [0.5, 1., 0.], [-0.3, -0.04, 1.]]),
+    //     u: Matrix::new([[10., -7., 0.], [0., 2.5, 5.], [0., 0., 6.2]]),
+    //     p: Matrix::new([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]),
+    // };
+
+    let result = mtx.lu();
+
+    assert!(mtx.isclose(&result.p.mul(&result.l.mul(&result.u))));
+}
+
+#[test]
+fn lu_decomposition_with_permuations() {
+    // This test requires permutations otherwise NaNs result in the
+    // decomposition
+    let mtx = Matrix::new([
+        [0., 2., 8., 6.],
+        [0., 0., 1., 2.],
+        [0., 1., 0., 1.],
+        [3., 7., 1., 0.],
+    ]);
+
+    let result = mtx.clone().lu();
+
+    assert!(mtx.isclose(&result.p.mul(&result.l.mul(&result.u))));
 }

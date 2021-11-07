@@ -181,6 +181,20 @@ where
         }
     }
 
+    pub fn inv(&self) -> Matrix<T, M, N>
+    where
+        [(); N + N]: Sized,
+    {
+        // Stack identity matrix to the right
+        let mut augmented = self.hstack(Self::identity());
+
+        // Convert augmented matrix into reduced row echelon form
+        augmented.into_reduced_row_echelon();
+
+        // Remove identity matrix from the left
+        augmented.view([0..M, N..2 * N]).into()
+    }
+
     fn swap_rows(&mut self, row1: usize, row2: usize) {
         if row1 == row2 {
             return;

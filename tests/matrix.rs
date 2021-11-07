@@ -136,6 +136,15 @@ fn reduced_row_echelon() {
     assert!(mtx.isclose(&expected));
 }
 
+#[test]
+fn matrix_inverse() {
+    let mtx = Matrix::new([[2., 4., 1.], [-1., 1., -1.], [1., 4., 0.]]);
+
+    let result = mtx.inv();
+    let expected = Matrix::new([[-4., -4., 5.], [1., 1., -1.], [5., 4., -6.]]);
+
+    assert!(result.isclose(&expected));
+}
 
 #[test]
 fn hstack() {

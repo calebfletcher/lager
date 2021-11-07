@@ -135,3 +135,40 @@ fn reduced_row_echelon() {
 
     assert!(mtx.isclose(&expected));
 }
+
+
+#[test]
+fn hstack() {
+    let mtx1: Matrix<f64, 3, 4> =
+        Matrix::new([[2., 4., 1., 7.], [-1., 1., -1., 2.], [1., 4., 0., 9.]]);
+    let mtx2: Matrix<f64, 3, 3> = Matrix::new([[-4., -4., 5.], [1., 1., -1.], [5., 4., -6.]]);
+
+    let result: Matrix<f64, 3, 7> = mtx1.hstack(mtx2);
+    let expected = Matrix::new([
+        [2., 4., 1., 7., -4., -4., 5.],
+        [-1., 1., -1., 2., 1., 1., -1.],
+        [1., 4., 0., 9., 5., 4., -6.],
+    ]);
+
+    assert!(result.isclose(&expected));
+}
+
+#[test]
+fn vstack() {
+    let mtx1: Matrix<f64, 3, 3> = Matrix::new([[2., 4., 1.], [-1., 1., -1.], [1., 4., 0.]]);
+    let mtx2: Matrix<f64, 4, 3> =
+        Matrix::new([[-4., -4., 5.], [1., 1., -1.], [5., 4., -6.], [7., 2., 9.]]);
+
+    let result: Matrix<f64, 7, 3> = mtx1.vstack(mtx2);
+    let expected = Matrix::new([
+        [2., 4., 1.],
+        [-1., 1., -1.],
+        [1., 4., 0.],
+        [-4., -4., 5.],
+        [1., 1., -1.],
+        [5., 4., -6.],
+        [7., 2., 9.],
+    ]);
+
+    assert!(result.isclose(&expected));
+}

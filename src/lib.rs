@@ -1,3 +1,6 @@
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
+
 use std::{
     fmt::Debug,
     ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, Neg, Range, Sub, SubAssign},
@@ -163,6 +166,32 @@ where
             return;
         }
         self.values.swap(row1, row2);
+    }
+
+    pub fn hstack<const C2: usize>(&self, other: Matrix<T, M, C2>) -> Matrix<T, M, { N + C2 }> {
+        let mut mtx: Matrix<T, M, { N + C2 }> = self.view([0..M, 0..N]).into();
+
+        // For each element in the other matrix
+        for row in 0..M {
+            for col in 0..C2 {
+                // Copy the element from the other matrix to the new matrix
+                mtx[[row, col + N]] = other[[row, col]];
+            }
+        }
+        mtx
+    }
+
+    pub fn vstack<const R2: usize>(&self, other: Matrix<T, R2, N>) -> Matrix<T, { M + R2 }, N> {
+        let mut mtx: Matrix<T, { M + R2 }, N> = self.view([0..M, 0..N]).into();
+
+        // For each element in the other matrix
+        for row in 0..R2 {
+            for col in 0..N {
+                // Copy the element from the other matrix to the new matrix
+                mtx[[row + M, col]] = other[[row, col]];
+            }
+        }
+        mtx
     }
 }
 

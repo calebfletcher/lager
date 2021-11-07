@@ -117,3 +117,21 @@ fn row_echelon() {
 
     assert!(mtx.isclose(&expected));
 }
+
+#[test]
+fn reduced_row_echelon() {
+    let mut mtx = Matrix::new([
+        [2., 4., 1., 1., 0., 0.],
+        [-1., 1., -1., 0., 1., 0.],
+        [1., 4., 0., 0., 0., 1.],
+    ]);
+
+    mtx.into_reduced_row_echelon();
+    let expected = Matrix::new([
+        [1., 0., 0., -4., -4., 5.],
+        [0., 1., 0., 1., 1., -1.],
+        [0., 0., 1., 5., 4., -6.],
+    ]);
+
+    assert!(mtx.isclose(&expected));
+}

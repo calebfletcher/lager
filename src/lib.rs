@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    ops::{Add, AddAssign, Div, Index, IndexMut, Mul, Neg, Range, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, Neg, Range, Sub, SubAssign},
 };
 
 use abs::Abs;
@@ -27,6 +27,7 @@ where
         + Default
         + AddAssign
         + SubAssign
+        + DivAssign
         + Abs
         + Debug
         + PartialOrd
@@ -41,6 +42,7 @@ where
         let mut res = [[Default::default(); O]; M];
 
         // For each element in the result
+        #[allow(clippy::needless_range_loop)]
         for i in 0..M {
             for j in 0..O {
                 // For each value contributing to the resulting element
@@ -95,7 +97,6 @@ where
             //let i_max = argmax (i = h..m, A[[i, k]].abs());
             if self[[i_max, k]] == 0.0.into() {
                 /* No pivot in this column, pass to next column */
-                k += 1;
             } else {
                 self.swap_rows(h, i_max);
                 /* Do for all rows below pivot: */
@@ -111,7 +112,48 @@ where
                 }
                 /* Increase pivot row and column */
                 h += 1;
-                k += 1;
+            }
+            k += 1;
+        }
+    }
+
+    pub fn into_reduced_row_echelon(&mut self) {
+        self.into_row_echelon();
+
+        let mut h = M - 1; // Initialization of the pivot row
+        let mut k = 0; // Initialization of the pivot column
+
+        // Find first non-zero element in the last row
+        while self[[h, k]] == 0.0.into() {
+            k += 1;
+        }
+
+        loop {
+            // Make leading coefficient 1
+            let f = self[[h, k]];
+            for i in k..N {
+                self[[h, i]] /= f;
+            }
+
+            // Don't reduce above rows if on the first row
+            if h == 0 {
+                break;
+            }
+
+            // Set each element in each row above to zero
+            for i in 0..h {
+                // For each row above
+                let f = self[[i, k]] / self[[h, k]];
+                for j in k..N {
+                    // For each element in the row that isn't to the left of the coefficient
+                    let el = self[[h, j]];
+                    self[[i, j]] -= el * f;
+                }
+            }
+            h -= 1;
+            k -= 1;
+            while self[[h, k]] == 0.0.into() && k > 0 {
+                k -= 1;
             }
         }
     }
@@ -141,6 +183,7 @@ where
         let mut res = [[Default::default(); N]; M];
 
         // For each element
+        #[allow(clippy::needless_range_loop)]
         for row in 0..M {
             for col in 0..N {
                 // Add each element
@@ -162,6 +205,7 @@ where
         let mut res = [[Default::default(); N]; M];
 
         // For each element
+        #[allow(clippy::needless_range_loop)]
         for row in 0..M {
             for col in 0..N {
                 // Multiply the elements together
@@ -201,6 +245,7 @@ where
         + Debug
         + AddAssign
         + SubAssign
+        + DivAssign
         + PartialOrd
         + From<f32>,
     f64: From<T>,
@@ -220,4 +265,3 @@ where
         mtx
     }
 }
-

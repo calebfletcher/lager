@@ -360,9 +360,23 @@ impl<T, const M: usize, const N: usize> Index<[usize; 2]> for Matrix<T, M, N> {
     }
 }
 
+impl<T, const M: usize> Index<usize> for Vector<T, M> {
+    type Output = T;
+
+    fn index(&self, idx: usize) -> &Self::Output {
+        &self.values[idx][0]
+    }
+}
+
 impl<T, const M: usize, const N: usize> IndexMut<[usize; 2]> for Matrix<T, M, N> {
     fn index_mut(&mut self, idx: [usize; 2]) -> &mut Self::Output {
         &mut self.values[idx[0]][idx[1]]
+    }
+}
+
+impl<T, const M: usize> IndexMut<usize> for Vector<T, M> {
+    fn index_mut(&mut self, idx: usize) -> &mut Self::Output {
+        &mut self.values[idx][0]
     }
 }
 

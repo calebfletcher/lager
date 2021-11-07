@@ -265,3 +265,12 @@ fn count_3x3() {
     assert_eq!(mtx.count(), 7);
 }
 
+#[test]
+fn diag_3x3() {
+    let mtx = Matrix::new([[2., 4., 1.], [0., 1., -1.], [1., 4., 0.]]);
+    let result = mtx.diag();
+
+    let expected = Matrix::new([[2.], [1.], [0.]]);
+
+    assert!(expected.isclose(&result))
+}

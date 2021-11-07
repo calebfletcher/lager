@@ -279,6 +279,15 @@ where
             p: perms,
         }
     }
+
+    pub fn diag(&self) -> Matrix<T, M, 1> {
+        let mut vec = Vector::zeros();
+        for i in 0..M {
+            vec[i] = self[[i, i]];
+        }
+        vec
+    }
+
     pub fn count(&self) -> usize {
         let mut count = 0;
         for i in 0..M {

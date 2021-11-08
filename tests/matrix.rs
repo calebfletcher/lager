@@ -298,3 +298,13 @@ fn determinant_4x4() {
     ]);
     assert!(602.0_f64.isclose(mtx.det()));
 }
+
+#[test]
+fn transpose() {
+    let mtx = Matrix::new([[1., 2., 3.], [4., 5., 6.], [7., 8., 9.], [10., 11., 12.]]);
+
+    let res = mtx.t();
+    let expected = Matrix::new([[1., 4., 7., 10.], [2., 5., 8., 11.], [3., 6., 9., 12.]]);
+
+    assert!(res.isclose(&expected));
+}

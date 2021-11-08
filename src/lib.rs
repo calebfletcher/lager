@@ -76,6 +76,18 @@ where
         mtx
     }
 
+    pub fn t(&self) -> Matrix<T, N, M> {
+        let mut mtx = Matrix::zeros();
+
+        for row in 0..M {
+            for col in 0..N {
+                mtx[[col, row]] = self[[row, col]];
+            }
+        }
+
+        mtx
+    }
+
     pub fn mul<const O: usize>(&self, rhs: &Matrix<T, N, O>) -> Matrix<T, M, O> {
         let mut res = [[Default::default(); O]; M];
 

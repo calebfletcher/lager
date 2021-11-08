@@ -3,7 +3,7 @@ use std::ops::Neg;
 pub trait Abs {
     fn abs(&self) -> Self
     where
-        Self: Sized + PartialOrd + Neg<Output = Self> + From<f32> + Copy,
+        Self: Sized + PartialOrd + Neg<Output = Self> + From<f64> + Copy,
     {
         if *self >= 0.0.into() {
             *self

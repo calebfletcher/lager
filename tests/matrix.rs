@@ -1,4 +1,4 @@
-use lager::{LUDecomposition, Matrix};
+use lager::{isclose::IsClose, Matrix};
 
 #[test]
 fn index_matrices() {

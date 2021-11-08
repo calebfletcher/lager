@@ -8,9 +8,11 @@ use std::{
 };
 
 use abs::Abs;
+use isclose::IsClose;
 use matrixview::MatrixView;
 
 mod abs;
+pub mod isclose;
 mod matrixview;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -18,6 +20,7 @@ pub struct Matrix<T, const M: usize, const N: usize> {
     pub values: [[T; N]; M],
 }
 
+#[derive(Debug, Clone)]
 pub struct LUDecomposition<T, const M: usize, const N: usize> {
     pub l: Matrix<T, M, M>, //  Not a typo, see https://en.wikipedia.org/wiki/LU_decomposition#Rectangular_matrices
     pub u: Matrix<T, M, N>,
@@ -44,9 +47,10 @@ where
         + SubAssign
         + DivAssign
         + Abs
+        + IsClose
         + Debug
         + PartialOrd
-        + From<f32>,
+        + From<f64>,
     f64: From<T>,
 {
     pub fn new(array: [[T; N]; M]) -> Self {
@@ -90,15 +94,11 @@ where
     }
 
     pub fn isclose(&self, other: &Matrix<T, M, N>) -> bool {
-        let rt: T = 1e-05.into();
-        let at: T = 1e-08.into();
-
         // For each element in the matrices
         for i in 0..M {
             for j in 0..N {
                 // Compare difference to the threshold
-                let threshold = rt * self[[i, j]].abs() + at;
-                if (self[[i, j]] - other[[i, j]]).abs() > threshold {
+                if !self[[i, j]].isclose(other[[i, j]]) {
                     return false;
                 }
             }
@@ -424,12 +424,13 @@ where
         + Div<Output = T>
         + Default
         + Abs
+        + IsClose
         + Debug
         + AddAssign
         + SubAssign
         + DivAssign
         + PartialOrd
-        + From<f32>,
+        + From<f64>,
     f64: From<T>,
 {
     fn from(view: MatrixView<T, M, N, R, C>) -> Self {

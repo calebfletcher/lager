@@ -210,17 +210,14 @@ fn identity_3x3() {
 fn lu_decomposition() {
     let mtx = Matrix::new([[2., -1., -2.], [-4., 6., 3.], [-4., -2., 8.]]);
 
-    let expected = LUDecomposition {
-        l: Matrix::new([[1., 0., 0.], [-2., 1., 0.], [-2., -1., 1.]]),
-        u: Matrix::new([[2., -1., -2.], [0., 4., -1.], [0., 0., 3.]]),
-        p: Matrix::new([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]),
-    };
-
     let result = mtx.lu();
 
-    assert!(result.l.isclose(&expected.l));
-    assert!(result.u.isclose(&expected.u));
-    assert!(result.p.isclose(&expected.p));
+    assert!(result.l.is_lower_triangular());
+    assert!(result.u.is_upper_triangular());
+    assert_eq!(result.p.count(), 3);
+    assert!(3.0_f64.isclose(result.p.sum()));
+
+    assert!(mtx.isclose(&result.p.inv().mul(&result.l.mul(&result.u))));
 }
 
 #[test]
@@ -240,7 +237,12 @@ fn lu_decomposition_unknown_result() {
 
     let result = mtx.lu();
 
-    assert!(mtx.isclose(&result.p.mul(&result.l.mul(&result.u))));
+    assert!(result.l.is_lower_triangular());
+    assert!(result.u.is_upper_triangular());
+    assert_eq!(result.p.count(), 3);
+    assert!(3.0_f64.isclose(result.p.sum()));
+
+    assert!(mtx.isclose(&result.p.inv().mul(&result.l.mul(&result.u))));
 }
 
 #[test]
@@ -254,9 +256,14 @@ fn lu_decomposition_with_permuations() {
         [3., 7., 1., 0.],
     ]);
 
-    let result = mtx.clone().lu();
+    let result = mtx.lu();
 
-    assert!(mtx.isclose(&result.p.mul(&result.l.mul(&result.u))));
+    assert!(result.l.is_lower_triangular());
+    assert!(result.u.is_upper_triangular());
+    assert_eq!(result.p.count(), 4);
+    assert!(4.0_f64.isclose(result.p.sum()));
+
+    assert!(mtx.isclose(&result.p.inv().mul(&result.l.mul(&result.u))));
 }
 
 #[test]

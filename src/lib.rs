@@ -247,16 +247,17 @@ where
         let mut upper = Matrix::zeros();
 
         for col in 0..N {
-            let mut next_nonzero_row = col;
-            for row in col..M {
-                if mtx[[row, col]] != 0.0.into() {
-                    next_nonzero_row = row;
-                    break;
-                }
-            }
+            let i_max = col
+                + argmax(
+                    self.view::<M, 1>([col..M, col..col])
+                        .iter()
+                        .take(M - col) // Takes only the values within the valid range
+                        .map(|el| el.abs()),
+                )
+                .unwrap();
 
-            mtx.swap_rows(col, next_nonzero_row);
-            perms.swap_rows(col, next_nonzero_row);
+            mtx.swap_rows(col, i_max);
+            perms.swap_rows(col, i_max);
         }
 
         // Doolittle's algorithm

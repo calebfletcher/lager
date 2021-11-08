@@ -317,6 +317,29 @@ where
         self.iter().fold(0.0.into(), |acc: T, x| acc + *x)
     }
 
+    pub fn is_upper_triangular(&self) -> bool {
+        for row in 0..M {
+            for col in 0..row {
+                dbg!(row, col);
+                if !self[[row, col]].isclose(0.0.into()) {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    pub fn is_lower_triangular(&self) -> bool {
+        for row in 0..M {
+            for col in (row + 1)..N {
+                dbg!(row, col);
+                if !self[[row, col]].isclose(0.0.into()) {
+                    return false;
+                }
+            }
+        }
+        true
+    }
 }
 
 fn argmax<T: PartialOrd>(slice: impl Iterator<Item = T>) -> Option<usize> {

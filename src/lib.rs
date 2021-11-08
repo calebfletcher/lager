@@ -24,6 +24,11 @@ pub struct LUDecomposition<T, const M: usize, const N: usize> {
     pub p: Matrix<T, M, N>,
 }
 
+pub struct MatrixIter<'a, T, const M: usize, const N: usize> {
+    mtx: &'a Matrix<T, M, N>,
+    i: usize,
+}
+
 pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
 
 impl<T, const M: usize, const N: usize> Matrix<T, M, N>
@@ -299,6 +304,19 @@ where
         }
         count
     }
+
+    pub fn iter(&self) -> MatrixIter<T, M, N> {
+        MatrixIter { mtx: self, i: 0 }
+    }
+
+    pub fn prod(&self) -> T {
+        self.iter().fold(1.0.into(), |acc: T, x| acc * *x)
+    }
+
+    pub fn sum(&self) -> T {
+        self.iter().fold(0.0.into(), |acc: T, x| acc + *x)
+    }
+
 }
 
 fn argmax<T: PartialOrd>(slice: impl Iterator<Item = T>) -> Option<usize> {
@@ -377,6 +395,21 @@ impl<T, const M: usize, const N: usize> IndexMut<[usize; 2]> for Matrix<T, M, N>
 impl<T, const M: usize> IndexMut<usize> for Vector<T, M> {
     fn index_mut(&mut self, idx: usize) -> &mut Self::Output {
         &mut self.values[idx][0]
+    }
+}
+
+impl<'a, T, const M: usize, const N: usize> Iterator for MatrixIter<'a, T, M, N> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+        let current = self.i;
+
+        if self.i == M * N {
+            return None;
+        }
+
+        self.i += 1;
+
+        Some(&self.mtx[[current / N, current % N]])
     }
 }
 

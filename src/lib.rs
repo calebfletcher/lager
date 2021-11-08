@@ -286,6 +286,25 @@ where
         }
     }
 
+    pub fn det(&self) -> T {
+        if M == 2 && N == 2 {
+            self[[0, 0]] * self[[1, 1]] - self[[0, 1]] * self[[1, 0]]
+        } else {
+            let decomp = self.lu();
+
+            let num_perms = M - decomp.p.diag().count() - 1;
+            let det_pinv: T = ((-1_f64).powf(num_perms as f64)).into();
+            dbg!(num_perms);
+
+            let lower_det = decomp.l.diag().prod();
+            let upper_det = decomp.u.diag().prod();
+
+            dbg!(det_pinv, lower_det, upper_det);
+
+            det_pinv * lower_det * upper_det
+        }
+    }
+
     pub fn diag(&self) -> Matrix<T, M, 1> {
         let mut vec = Vector::zeros();
         for i in 0..M {

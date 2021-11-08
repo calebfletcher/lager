@@ -281,3 +281,20 @@ fn diag_3x3() {
 
     assert!(expected.isclose(&result))
 }
+
+#[test]
+fn determinant_3x3() {
+    let mtx: Matrix<f64, 3, 3> = Matrix::new([[2., 4., 1.], [-1., 1., -1.], [1., 4., 0.]]);
+    assert!((-1.0_f64).isclose(mtx.det()));
+}
+
+#[test]
+fn determinant_4x4() {
+    let mtx: Matrix<f64, 4, 4> = Matrix::new([
+        [4., 3., 2., 1.],
+        [1., 10., 3., 4.],
+        [5., 3., 2., -4.],
+        [4., 8., 7., 9.],
+    ]);
+    assert!(602.0_f64.isclose(mtx.det()));
+}

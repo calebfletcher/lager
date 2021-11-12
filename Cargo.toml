@@ -1,8 +1,10 @@
 [package]
 name = "lager"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
+description = "A lightweight type-safe linear algebra library."
+repository = "https://github.com/calebfletcher/lager"
 
 [dev-dependencies]
 criterion = {version = "0.3.5", features = ["html_reports"]}
